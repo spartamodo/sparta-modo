@@ -1,8 +1,10 @@
 package com.example.sparta_modo.global.entity;
 
+import com.example.sparta_modo.global.entity.enums.Auth;
 import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import com.example.sparta_modo.global.entity.enums.Role;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,5 +29,14 @@ public class UserWorkspace extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private InvitingStatus invitingStatus;
+
+    @Builder
+    public UserWorkspace(User user ,Workspace workspace, Role role, InvitingStatus invitingStatus) {
+        this.user = user;
+        this.workspace = workspace;
+        this.role = role;
+        this.invitingStatus = invitingStatus;
+
+    }
 
 }
