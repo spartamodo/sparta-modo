@@ -17,7 +17,9 @@ public enum ErrorCode {
     // 404 NOT FOUND (User, Workspace, Board, List, Card, Comment 모든 Not Found)
     NOT_FOUND_VALUE(HttpStatus.NOT_FOUND, "해당 정보가 없습니다."),
 
-    ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 값입니다.");
+    ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 값입니다."),
+
+    ILLIGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 인자 값입니다");
 
     private final HttpStatus httpStatus;
     private final String detail;
