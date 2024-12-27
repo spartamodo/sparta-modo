@@ -35,6 +35,14 @@ public class WorkspaceDto {
             this.title = title;
             this.description = description;
         }
+
+        public static Response toDto(Workspace workspace) {
+            return new Response(
+                    workspace.getId(),
+                    workspace.getTitle(),
+                    workspace.getDescription()
+            );
+        }
     }
 
 }

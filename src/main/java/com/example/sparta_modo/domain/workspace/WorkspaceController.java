@@ -7,10 +7,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/workspaces")
@@ -33,6 +32,14 @@ public class WorkspaceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     // 워크스페이스 조회
+    @GetMapping
+    public ResponseEntity<List<WorkspaceDto.Response>> getWorkspace(
+            HttpServletRequest httpServletRequest){
+
+        HttpSession session = httpServletRequest.getSession(false);
+        User loginUser = (User) session.getAttribute("loginUser");
+        return ResponseEntity.status(HttpStatus.OK).body(workspaceService.getWorkspaces(loginUser));
+    }
 
     // 워크스페이스 수정
 
