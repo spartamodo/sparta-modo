@@ -14,6 +14,11 @@ public class CommonException extends ParentException{
 		this.msg = msg;
 	}
 
+	public CommonException(ErrorCode errorCode){
+		this.errorCode = errorCode;
+		this.msg = errorCode.getDetail();
+	}
+
 	@Override
 	public HttpStatus getHttpStatus(){
 		return errorCode.getHttpStatus();
