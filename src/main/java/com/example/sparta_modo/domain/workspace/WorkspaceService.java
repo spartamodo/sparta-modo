@@ -24,7 +24,12 @@ public class WorkspaceService {
 
         workspaceRepository.save(workspace);
 
-        UserWorkspace userWorkspace = new UserWorkspace(loginUser, workspace, Role.ADMIN, InvitingStatus.ACCEPTED );
+        UserWorkspace userWorkspace = UserWorkspace.builder()
+                .user(loginUser)
+                .workspace(workspace)
+                .role(Role.ADMIN)
+                .invitingStatus(InvitingStatus.ACCEPTED)
+                .build();
 
         userWorkspaceRepository.save(userWorkspace);
 
