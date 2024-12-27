@@ -11,6 +11,8 @@ import com.example.sparta_modo.global.exception.CommonException;
 import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -44,31 +46,31 @@ public class WorkspaceService {
     // 워크스페이스 조회
     public List<WorkspaceDto.Response> getWorkspaces(User loginUser) {
 
-        if(loginUser.getAuth() != Auth.ADMIN){
-            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS,"ADMIN 이 아닙니다.");
+        if(loginUser.getAuth() != Auth.ADMIN) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "ADMIN 이 아닙니다.");
         }
-        List<UserWorkspace> userWorkspaces = userWorkspaceRepository.findByUser(loginUser);
 
-        List<Workspace> workspaces = userWorkspaces.stream().map(UserWorkspace::getWorkspace).toList();
+        List<Workspace> workspaces = userWorkspaceRepository.findWorkspacesByUser(loginUser);
+
+        if(workspaces.isEmpty()) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 사용자의 워크스페이스가 없습니다.");
+        }
 
         return workspaces.stream().map(WorkspaceDto.Response::toDto).toList();
     }
 
     // 워크스페이스 수정
+    @Transactional
     public WorkspaceDto.Response updateWorkspace(User loginUser, Long workspaceId,
                                                  WorkspaceDto.Request requestDto) {
 
-        UserWorkspace userWorkspace = userWorkspaceRepository.findByIdAndUser(workspaceId, loginUser);
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
 
-        if(userWorkspace == null){
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, " workspace 를 찾을 수 없습니다.");
+        if (userWorkspace == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "workspace 를 찾을 수 없습니다.");
         }
-
         Workspace workspace = userWorkspace.getWorkspace();
-
         workspace.updateWorkspace(requestDto.getTitle(),requestDto.getDescription());
-
-        workspaceRepository.save(workspace);
 
         return WorkspaceDto.Response.toDto(workspace);
     }
