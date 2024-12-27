@@ -2,10 +2,6 @@ package com.example.sparta_modo.domain.workspace;
 
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.global.entity.User;
-import com.example.sparta_modo.global.entity.enums.Auth;
-import com.example.sparta_modo.global.entity.enums.UserStatus;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
