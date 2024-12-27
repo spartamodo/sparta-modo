@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface UserWorkspaceRepository extends JpaRepository<UserWorkspace, Long> {
     List<UserWorkspace> findByUser(User loginUser);
+
+    UserWorkspace findByIdAndUser(Long workspaceId, User loginUser);
 }

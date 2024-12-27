@@ -37,7 +37,7 @@ public class WorkspaceService {
 
         userWorkspaceRepository.save(userWorkspace);
 
-        return new WorkspaceDto.Response(workspace.getId(), workspace.getTitle(), workspace.getDescription());
+        return WorkspaceDto.Response.toDto(workspace);
 
     }
 
@@ -52,5 +52,24 @@ public class WorkspaceService {
         List<Workspace> workspaces = userWorkspaces.stream().map(UserWorkspace::getWorkspace).toList();
 
         return workspaces.stream().map(WorkspaceDto.Response::toDto).toList();
+    }
+
+    // 워크스페이스 수정
+    public WorkspaceDto.Response updateWorkspace(User loginUser, Long workspaceId,
+                                                 WorkspaceDto.Request requestDto) {
+
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByIdAndUser(workspaceId, loginUser);
+
+        if(userWorkspace == null){
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, " workspace 를 찾을 수 없습니다.");
+        }
+
+        Workspace workspace = userWorkspace.getWorkspace();
+
+        workspace.updateWorkspace(requestDto.getTitle(),requestDto.getDescription());
+
+        workspaceRepository.save(workspace);
+
+        return WorkspaceDto.Response.toDto(workspace);
     }
 }

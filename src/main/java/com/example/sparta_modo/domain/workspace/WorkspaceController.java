@@ -42,7 +42,16 @@ public class WorkspaceController {
     }
 
     // 워크스페이스 수정
+    @PatchMapping("/{workspaceId}")
+    public ResponseEntity<WorkspaceDto.Response> updateWorkspace(
+            @PathVariable Long workspaceId,
+            @RequestBody WorkspaceDto.Request requestDto,
+            HttpServletRequest httpServletRequest){
 
+        HttpSession session = httpServletRequest.getSession(false);
+        User loginUser = (User) session.getAttribute("loginUser");
+        return ResponseEntity.status(HttpStatus.OK).body(workspaceService.updateWorkspace(loginUser,workspaceId,requestDto));
+    }
     // 워크스페이스 삭제
 
     // 워크스페이스 멤버 초대

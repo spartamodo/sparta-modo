@@ -25,4 +25,13 @@ public class Workspace extends BaseEntity{
         this.title = title;
         this.description = description;
     }
+
+    public void updateWorkspace(String title, String description) {
+        if(title != null && !title.isEmpty()) {
+            this.title = title;
+        }
+        if(description != null && !description.isEmpty()) {
+            this.description = description;
+        }
+    }
 }
