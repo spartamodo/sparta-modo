@@ -1,6 +1,7 @@
 package com.example.sparta_modo.global.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,4 +19,10 @@ public class Workspace extends BaseEntity{
 
     private String description;
 
+    @Builder
+    public Workspace(Long id, String title, String description) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
 }
