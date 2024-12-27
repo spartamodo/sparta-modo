@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Entity(name = "workspace")
 @NoArgsConstructor
+@DynamicUpdate
 public class Workspace extends BaseEntity{
 
     @Id
