@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.POST, "/users/login", "/users").permitAll()
 
 				//workspace
-				.requestMatchers(HttpMethod.POST, "/workspaces").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.POST, "/workspaces").hasAuthority("ADMIN")
 
 				//나머지
 				.anyRequest().authenticated()
