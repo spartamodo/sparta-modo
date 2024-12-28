@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class BoardImage {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -18,5 +18,10 @@ public class BoardImage {
     private Board board;
 
     private String url;
+
+    public BoardImage(Board board, String url) {
+        this.board = board;
+        this.url = url;
+    }
 
 }

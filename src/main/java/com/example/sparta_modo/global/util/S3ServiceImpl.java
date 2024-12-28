@@ -3,7 +3,6 @@ package com.example.sparta_modo.global.util;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.sparta_modo.domain.board.dto.BoardDto;
-import com.example.sparta_modo.domain.card.dto.CardDto;
 import com.example.sparta_modo.global.exception.ImageException;
 import com.example.sparta_modo.global.exception.errorcode.ImageErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -23,44 +22,60 @@ public class S3ServiceImpl implements S3Service {
     private final AmazonS3Client amazonS3;
 
     @Value("${spring.cloud.aws.s3.bucket}")
-    private String bucket;
+    private String BUCKET;
 
     @Override
-    public void uploadImage(BoardDto.Request boardDto, Long boardId) throws IOException {
-        saveFileToS3(boardDto.getImage(), ImageFormat.BOARD, boardId);
-
-    }
-
-    @Override
-    public void uploadFiles(CardDto.Request cardDto, Long cardId) throws IOException {
-        for (MultipartFile file : cardDto.getImages()) {
-            saveFileToS3(file, CARD, cardId);
+    public String uploadImage(BoardDto.Request boardDto, Long boardId) throws IOException {
+        if(boardDto.getImage().length != 1) {
+            throw new ImageException(ImageErrorCode.TOO_MANY_FILES);
         }
+
+        return saveFileToS3(boardDto.getImage()[0], ImageFormat.BOARD, boardId);
     }
+//
+//    @Override
+//    public void uploadFiles(CardDto.Request cardDto, Long cardId) throws IOException {
+//        for (MultipartFile file : cardDto.getImages()) {
+//            saveFileToS3(file, CARD, cardId);
+//        }
+//    }
 
-    private void saveFileToS3(MultipartFile file, ImageFormat imageFormat, Long id) throws IOException {
+    private String saveFileToS3(MultipartFile file, ImageFormat imageFormat, Long id) throws IOException {
 
-        validateFileCase(file, imageFormat);
+        if (file == null) {
+            throw new ImageException(ImageErrorCode.NO_FILE);
+        }
 
-        StringBuilder basePackageName = new StringBuilder(bucket).append(imageFormat.name());
-        String s3FileName = file.getOriginalFilename();
+        String fileExtension = getFileExtensionWithDot(file.getOriginalFilename());
+        validateFileExtension(fileExtension, imageFormat);
+
+        StringBuilder basePackageName = new StringBuilder(BUCKET);
+
+        StringBuilder secondPackageName = new StringBuilder("/").append(imageFormat.name());
+        String s3FileName = String.valueOf(id);
 
         if (imageFormat == CARD) {
-            basePackageName.append("/").append(id);
+            secondPackageName.append("/").append(id);
+            s3FileName = file.getOriginalFilename();
         }
+
+        String fileUrl = s3FileName + fileExtension;
 
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentLength(file.getInputStream().available());
 
-        amazonS3.putObject(basePackageName.toString(), s3FileName, file.getInputStream(), objMeta);
+        amazonS3.putObject(basePackageName.append(secondPackageName).toString(), fileUrl, file.getInputStream(), objMeta);
+        return getPublicUrl(secondPackageName + "/" + fileUrl);
     }
 
-    private void validateFileCase(MultipartFile file, ImageFormat imageFormat) {
-        String fileExtension = getFileExtensionWithDot(file.getOriginalFilename());
-
+    private void validateFileExtension(String fileExtension, ImageFormat imageFormat) {
         if (isWhiteList(fileExtension, imageFormat.getWhiteList())) {
             throw new ImageException(ImageErrorCode.NOT_ALLOW_FILE_EXTENSION);
         }
+    }
+
+    private String getPublicUrl(String fileLocation) {
+        return String.format("https://%s.s3.%s.amazonaws.com%s", BUCKET, amazonS3.getRegionName(), fileLocation);
     }
 
     private boolean isWhiteList(String fileExtension, String[] whiteList) {

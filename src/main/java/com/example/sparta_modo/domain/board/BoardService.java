@@ -4,6 +4,7 @@ import com.amazonaws.SdkClientException;
 import com.example.sparta_modo.domain.board.dto.BoardDto;
 import com.example.sparta_modo.domain.workspace.WorkspaceRepository;
 import com.example.sparta_modo.global.entity.Board;
+import com.example.sparta_modo.global.entity.BoardImage;
 import com.example.sparta_modo.global.entity.Workspace;
 import com.example.sparta_modo.global.exception.CommonException;
 import com.example.sparta_modo.global.exception.ImageException;
@@ -22,10 +23,11 @@ public class BoardService {
 
     private final S3Service s3Service;
     private final BoardRepository boardRepository;
+    private final BoardImageRepository boardImageRepository;
     private final WorkspaceRepository workspaceRepository;
 
     @Transactional
-    public void createBoard(BoardDto.Request boardDto, Long workspaceId) {
+    public BoardDto.ResponseBaseDto createBoard(BoardDto.Request boardDto, Long workspaceId) {
         Workspace findWorkspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 
@@ -34,12 +36,15 @@ public class BoardService {
 
         if (boardDto.getImageActivated() == 1) {
             try {
-                s3Service.uploadImage(boardDto, savedBoard.getId());
-            } catch (SdkClientException | IOException e) {
+                String imageUrl = s3Service.uploadImage(boardDto, savedBoard.getId());
+                BoardImage boardImage = new BoardImage(savedBoard, imageUrl);
+                boardImageRepository.save(boardImage);
+                return new BoardDto.ExistImageResponse(savedBoard.getId(), savedBoard.getTitle(), boardImage.getUrl());
+            } catch (SdkClientException | IOException e ) {
                 throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
 
-
+        return new BoardDto.generalResponse(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getBackgroundColor());
     }
 }
