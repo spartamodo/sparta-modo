@@ -19,7 +19,9 @@ public enum ErrorCode {
 
     ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 값입니다."),
 
-    ILLIGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 인자 값입니다");
+    ILLIGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "유효하지 않은 인자 값입니다"),
+
+    JACKSON_IO_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "처리중 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;

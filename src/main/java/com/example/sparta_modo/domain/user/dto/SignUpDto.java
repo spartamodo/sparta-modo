@@ -28,18 +28,15 @@ public class SignUpDto {
 		@ValidEnum(enumClass = Auth.class, message = "유효하지 않은 auth입니다.")
 		private String auth;
 
-		public User toEntity() {
+		public User toEntity(PasswordEncoder encoder) {
 			return User.builder()
 				.email(email)
-				.password(password)
+				.password(encoder.encode(password))
 				.nickname(nickname)
 				.auth(Auth.of(auth))
 				.build();
 		}
 
-		public void encodePassword(PasswordEncoder encoder){
-				password = encoder.encode(password);
-		}
 	}
 
 	@Getter

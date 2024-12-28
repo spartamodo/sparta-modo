@@ -1,4 +1,4 @@
-package com.example.sparta_modo.global.config;
+package com.example.sparta_modo.domain.user.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
