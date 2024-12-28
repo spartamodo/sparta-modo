@@ -4,7 +4,6 @@ import com.example.sparta_modo.domain.board.dto.BoardDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity(name = "board")
@@ -24,17 +23,16 @@ public class Board {
     @Column(columnDefinition = "text")
     private String description;
 
-    @ColumnDefault("'#FFFFFF'")
-    private String themeColor;
+    private String backgroundColor;
 
-    @Column(nullable = false, columnDefinition = "tinyint")
+    @Column(nullable = false, columnDefinition = "bit")
     private int imageActivated;
 
     public Board (Workspace workspace, BoardDto.Request request) {
         this.workspace = workspace;
         this.title = request.getTitle();
         this.description = request.getDescription();
-        this.themeColor = request.getBackgroundColor();
+        this.backgroundColor = request.getBackgroundColor();
         this.imageActivated = request.getImageActivated();
     }
 }
