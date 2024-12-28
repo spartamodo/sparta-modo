@@ -1,4 +1,4 @@
-package com.example.sparta_modo.global.config;
+package com.example.sparta_modo.global.util;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
