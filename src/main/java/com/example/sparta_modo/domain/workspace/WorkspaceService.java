@@ -108,6 +108,8 @@ public class WorkspaceService {
                 .build();
         userWorkspaceRepository.save(userWorkspace);
 
+        //TODO 알림 기능 추가 ex) loginUser 님이 workspace에 user님을 초대하셨습니다.
+
         return new WorkspaceInviteDto.Response(workspaceId,user.getId(),user.getEmail());
     }
 }

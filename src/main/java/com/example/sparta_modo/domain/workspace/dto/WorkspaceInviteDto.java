@@ -2,7 +2,6 @@ package com.example.sparta_modo.domain.workspace.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Getter;
 
 public class WorkspaceInviteDto {
