@@ -46,10 +46,6 @@ public class WorkspaceService {
     // 워크스페이스 조회
     public List<WorkspaceDto.Response> getWorkspaces(User loginUser) {
 
-        if(loginUser.getAuth() != Auth.ADMIN) {
-            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "ADMIN 이 아닙니다.");
-        }
-
         List<Workspace> workspaces = userWorkspaceRepository.findWorkspacesByUser(loginUser);
 
         if(workspaces.isEmpty()) {
@@ -67,11 +63,24 @@ public class WorkspaceService {
         UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
 
         if (userWorkspace == null) {
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "workspace 를 찾을 수 없습니다.");
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 workspace 를 찾을 수 없습니다.");
         }
         Workspace workspace = userWorkspace.getWorkspace();
         workspace.updateWorkspace(requestDto.getTitle(),requestDto.getDescription());
 
         return WorkspaceDto.Response.toDto(workspace);
+    }
+
+    // 워크스페이스 삭제
+    @Transactional
+    public void deleteWorkspace(User loginUser, Long workspaceId) {
+
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
+
+        if(userWorkspace == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 workspace 를 찾을 수 없습니다.");
+        }
+
+        userWorkspaceRepository.deleteById(userWorkspace.getId());
     }
 }

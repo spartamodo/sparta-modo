@@ -1,5 +1,6 @@
 package com.example.sparta_modo.domain.workspace;
 
+import com.example.sparta_modo.domain.user.dto.MsgDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.global.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,16 @@ public class WorkspaceController {
         return ResponseEntity.status(HttpStatus.OK).body(workspaceService.updateWorkspace(loginUser,workspaceId,requestDto));
     }
     // 워크스페이스 삭제
+    @DeleteMapping("/{workspaceId}")
+    public ResponseEntity<MsgDto> deleteWorkspace(
+            @PathVariable Long workspaceId,
+            @AuthenticationPrincipal User loginUser
+    ){
+        workspaceService.deleteWorkspace(loginUser,workspaceId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new MsgDto("워크스페이스 삭제 완료"));
+    }
+
 
     // 워크스페이스 멤버 초대
 
