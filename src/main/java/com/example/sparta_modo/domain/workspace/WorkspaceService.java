@@ -1,10 +1,11 @@
 package com.example.sparta_modo.domain.workspace;
 
+import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
+import com.example.sparta_modo.domain.workspace.dto.WorkspaceInviteDto;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.Workspace;
-import com.example.sparta_modo.global.entity.enums.Auth;
 import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import com.example.sparta_modo.global.entity.enums.Role;
 import com.example.sparta_modo.global.exception.CommonException;
@@ -22,6 +23,8 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
 
     private final UserWorkspaceRepository userWorkspaceRepository;
+
+    private final UserRepository userRepository;
 
     // 워크스페이스 생성
     public WorkspaceDto.Response createWorkspace(User loginUser, WorkspaceDto.Request requestDto) {
@@ -82,5 +85,29 @@ public class WorkspaceService {
         }
 
         userWorkspaceRepository.deleteById(userWorkspace.getId());
+    }
+
+    // 워크스페이스 멤버 초대
+    @Transactional
+    public WorkspaceInviteDto.Response inviteUserWorkspace(User loginUser, WorkspaceInviteDto.Request request, Long workspaceId) {
+        // 멤버 이메일로 멤버찾기
+        User user = userRepository.findUserByEmail(request.getEmail());
+
+        // 초대할 워크스페이스
+        Workspace workspace = workspaceRepository.findByIdOrElseThrow(workspaceId);
+
+        if(userWorkspaceRepository.existsUserWorkspaceByUserAndWorkspace(user,workspace)){
+            throw new CommonException(ErrorCode.ALREADY_EXIST, "해당 사용자는 이미 워크스페이스에 존재합니다.");
+        }
+
+        UserWorkspace userWorkspace = UserWorkspace.builder()
+                .user(user)
+                .workspace(workspace)
+                .role(Role.READ_ONLY)
+                .invitingStatus(InvitingStatus.INVITING)
+                .build();
+        userWorkspaceRepository.save(userWorkspace);
+
+        return new WorkspaceInviteDto.Response(workspaceId,user.getId(),user.getEmail());
     }
 }
