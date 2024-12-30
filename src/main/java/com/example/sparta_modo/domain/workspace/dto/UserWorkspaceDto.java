@@ -10,16 +10,16 @@ public class UserWorkspaceDto {
     public static class Request{
 
         @ValidEnum(enumClass = Role.class, message = "유효하지 않은 role입니다.")
-        private Role role;
+        private String role;
     }
 
     @Getter
     public static class Response{
-        private Long workspaceId;
+        private final Long workspaceId;
 
-        private Long userId;
+        private final Long userId;
 
-        private Role role;
+        private final Role role;
 
         public Response(Long workspaceId, Long userId, Role role) {
             this.workspaceId = workspaceId;

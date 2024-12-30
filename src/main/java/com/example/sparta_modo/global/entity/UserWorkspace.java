@@ -39,7 +39,7 @@ public class UserWorkspace extends BaseEntity{
 
     }
     // 사용자 역할 수정
-    public void updateRole(Role role) {
-        this.role = role;
+    public void updateRole(String role) {
+        this.role = Role.of(role);
     }
 }
