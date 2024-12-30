@@ -92,12 +92,28 @@ public class UserController {
 
 	// 워크스페이스 초대 조회
 	@GetMapping("/workspaces/inviting")
-	public ResponseEntity<List<UserWorkspaceDto.Response>> getInvitings(
+	public ResponseEntity<List<UserWorkspaceDto.Response>> getInviting(
 			@AuthenticationPrincipal User loginUser
 	){
 		List<UserWorkspaceDto.Response> response = workspaceService.getInviteWorkspace(loginUser);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	// 워크스페이스 초대 수락,거부
+	@PatchMapping("/workspaces/{workspaceId}/inviting/decide/{decide}")
+	public ResponseEntity<MsgDto> decideInviting(
+			@PathVariable Long workspaceId,
+			@PathVariable Boolean decide,
+			@AuthenticationPrincipal User loginUser
+	){
+		boolean result = workspaceService.acceptInviting(loginUser,workspaceId,decide);
+
+		if(result) {
+			return ResponseEntity.status(HttpStatus.OK).body(new MsgDto("초대를 수락했습니다."));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(new MsgDto("초대를 거절했습니다."));
+
 	}
 
 }

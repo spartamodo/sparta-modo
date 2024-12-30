@@ -10,7 +10,9 @@ import com.example.sparta_modo.global.entity.Workspace;
 import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import com.example.sparta_modo.global.entity.enums.Role;
 import com.example.sparta_modo.global.exception.CommonException;
+import com.example.sparta_modo.global.exception.WorkspaceException;
 import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
+import com.example.sparta_modo.global.exception.errorcode.WorkspaceErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,9 +136,30 @@ public class WorkspaceService {
         List<UserWorkspace> userWorkspaces = userWorkspaceRepository.findByUserAndInvitingStatus(loginUser,InvitingStatus.INVITING);
 
         if(userWorkspaces.isEmpty()) {
-            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 수신된 초대를 찾을 수 없습니다.");
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자에게 수신된 초대를 찾을 수 없습니다.");
         }
 
         return userWorkspaces.stream().map(UserWorkspaceDto.Response::toDto).toList();
+    }
+
+    // 워크스페이스 초대 수락, 거절
+    @Transactional
+    public boolean acceptInviting(User loginUser, Long workspaceId,Boolean decide) {
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
+        if(userWorkspace == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 workspace 를 찾을 수 없습니다.");
+        }
+        if(userWorkspace.getInvitingStatus() != InvitingStatus.INVITING){
+            throw new WorkspaceException(WorkspaceErrorCode.ALREADY_DECIDED_ACCESS);
+        }
+        //초대 수락
+        if(decide) {
+            userWorkspace.acceptInvitingStatus();
+            return true;
+        }
+        // 초대 거절시 삭제
+        userWorkspaceRepository.delete(userWorkspace);
+        return false;
+
     }
 }
