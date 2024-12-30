@@ -29,7 +29,7 @@ public class SequenceListService {
     private final Long GREEN_HOPPER_SEQ = 300L;
 
     public SequenceListDto.Response createList(User user, Long workspaceId, Long boardId, SequenceListDto.Request request) {
-//        userAuthorization(user, workspaceId);
+        userAuthorization(user, workspaceId);
 
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
 
@@ -57,7 +57,7 @@ public class SequenceListService {
     @Transactional
     public List<SequenceListDto.Response> updateSequence(User user, Long workspaceId, Long boardId, Long listId, @Valid Long moveTo) {
 
-//        userAuthorization(user, workspaceId);
+        userAuthorization(user, workspaceId);
 
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
         SequenceList findList = sequenceListRepository.findListByIdOrElseThrow(listId);

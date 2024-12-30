@@ -138,12 +138,6 @@ public class BoardDto {
         private final String imageUrl;
         private final String backgroundColor;
 
-        public AllDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl, String backgroundColor) {
-            super(boardId, title, description, imageActivated);
-            this.imageUrl = imageUrl;
-            this.backgroundColor = backgroundColor;
-        }
-
         public AllDetailResponse(Board findBoard) {
             super(findBoard.getId(), findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated());
             this.imageUrl = findBoard.getBoardImage().getUrl();
