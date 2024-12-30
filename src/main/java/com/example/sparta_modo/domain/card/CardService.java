@@ -1,10 +1,12 @@
 package com.example.sparta_modo.domain.card;
 
 import com.example.sparta_modo.domain.card.dto.CardCreateDto;
+import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
 import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.global.entity.Card;
+import com.example.sparta_modo.global.entity.CardHistory;
 import com.example.sparta_modo.global.entity.List;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
@@ -22,6 +24,7 @@ public class CardService {
     private final ListRepository listRepository;
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
+    private final CardHistoryRepository cardHistoryRepository;
 
     // 카드 생성 메서드
     public CardCreateDto createCard(User loginUser, CardCreateDto requestDto) {
@@ -31,12 +34,10 @@ public class CardService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 리스트ID 입니다."));
 
         // 워크스페이스 접근 권한 검증
-        Long workspaceId = list.getBoard().getWorkspace().getId();
-        checkReadOnly(loginUser, workspaceId);
+        checkReadOnly(loginUser, list.getBoard().getWorkspace().getId());
 
         // 담당자 조회 및 검증
-        User assignee = userRepository.findById(requestDto.getAssigneeId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 담당자 ID 입니다."));
+        User assignee = checkAssignee(requestDto.getAssigneeId());
 
         // 엔티티 생성
         Card card = requestDto.toEntity(list, assignee);
@@ -55,7 +56,7 @@ public class CardService {
     }
 
     private void checkReadOnly(User loginUser, Long workspaceId) {
-        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(workspaceId, loginUser);
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
 
         if (userWorkspace == null) {
             throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "해당 워크스페이스에 대한 접근 권한이 없습니다.");
@@ -67,6 +68,13 @@ public class CardService {
         }
     }
 
+    private User checkAssignee(Long requestDto) {
+        // 담당자 조회 및 검증
+        User assignee = userRepository.findById(requestDto)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 담당자 ID 입니다."));
+        return assignee;
+    }
+
     // 카드 수정 메서드
     public CardUpdateDto updateCard(User loginUser, Long cardId, CardUpdateDto requestDto) {
 
@@ -75,12 +83,10 @@ public class CardService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
         // 워크스페이스 접근 권한 검증
-        Long workspaceId = card.getList().getBoard().getWorkspace().getId();
-        checkReadOnly(loginUser, workspaceId);
+        checkReadOnly(loginUser, card.getList().getBoard().getWorkspace().getId());
 
         // 담당자 조회 및 검증
-        User assignee = userRepository.findById(requestDto.getAssigneeId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 담당자 ID 입니다."));
+        User assignee = checkAssignee(requestDto.getAssigneeId());
 
         // 카드 정보 수정
         card.updateCard(requestDto.getName(), requestDto.getDescription(), requestDto.getDeadline(), assignee);
@@ -93,5 +99,16 @@ public class CardService {
                 .deadline(card.getDeadline())
                 .assigneeId(card.getAssignee().getId())
                 .build();
+    }
+
+    public CardFindDto findCard(Long cardId) {
+
+        // 카드 조회 및 검증
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
+
+        java.util.List<CardHistory> historyList = cardHistoryRepository.findByCardId(cardId);
+
+        return new CardFindDto(card, historyList);
     }
 }

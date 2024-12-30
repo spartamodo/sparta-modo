@@ -1,6 +1,7 @@
 package com.example.sparta_modo.domain.card;
 
 import com.example.sparta_modo.domain.card.dto.CardCreateDto;
+import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
 import com.example.sparta_modo.global.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,5 +49,14 @@ public class CardController {
         CardUpdateDto updateDto = cardService.updateCard(loginUser, cardId, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(updateDto);
+    }
+
+    // 카드 조회
+    @GetMapping("/{cardId}")
+    public ResponseEntity<CardFindDto> findCard(@PathVariable Long cardId){
+
+        CardFindDto findDto = cardService.findCard(cardId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(findDto);
     }
 }
