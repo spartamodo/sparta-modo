@@ -16,8 +16,8 @@ public class Card extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "list_id")
-    private List list;
+    @JoinColumn(name = "sequence_list_id")
+    private SequenceList sequenceList;
 
     @Column(nullable = false)
     private String name;
