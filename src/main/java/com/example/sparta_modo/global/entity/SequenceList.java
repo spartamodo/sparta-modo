@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity(name = "sequence_list")
 @NoArgsConstructor
@@ -13,7 +16,7 @@ public class SequenceList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "board_id")
     private Board board;
 
@@ -22,6 +25,9 @@ public class SequenceList {
 
     @Column(nullable = false)
     private Long priority;
+
+    @OneToMany(mappedBy = "sequenceList",cascade = CascadeType.ALL)
+    private List<Card> list = new ArrayList<>();
 
     public SequenceList (Board board, String title, Long priority) {
         this.board = board;
