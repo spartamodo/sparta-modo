@@ -127,4 +127,16 @@ public class WorkspaceService {
 
         return new UserWorkspaceDto.Response(workspaceId,userId,userWorkspace.getRole());
     }
+
+    // 워크스페이스 초대 조회
+    public List<UserWorkspaceDto.Response> getInviteWorkspace(User loginUser) {
+
+        List<UserWorkspace> userWorkspaces = userWorkspaceRepository.findByUserAndInvitingStatus(loginUser,InvitingStatus.INVITING);
+
+        if(userWorkspaces.isEmpty()) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 수신된 초대를 찾을 수 없습니다.");
+        }
+
+        return userWorkspaces.stream().map(UserWorkspaceDto.Response::toDto).toList();
+    }
 }
