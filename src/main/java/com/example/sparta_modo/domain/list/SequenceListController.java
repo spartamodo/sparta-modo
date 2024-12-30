@@ -29,7 +29,7 @@ public class SequenceListController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedList);
     }
 
-    @PatchMapping("/{listId}")
+    @PatchMapping("/{listId}/sequence")
     public ResponseEntity<List<SequenceListDto.Response>> updateSequence(@PathVariable Long workspaceId,
                                                                          @PathVariable Long boardId,
                                                                          @PathVariable Long listId,
