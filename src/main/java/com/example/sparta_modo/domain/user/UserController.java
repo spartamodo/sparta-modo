@@ -3,7 +3,7 @@ package com.example.sparta_modo.domain.user;
 import static com.example.sparta_modo.domain.user.security.JwtUtil.AUTHORIZATION_HEADER;
 
 import com.example.sparta_modo.domain.user.dto.LoginDto;
-import com.example.sparta_modo.domain.user.dto.MsgDto;
+import com.example.sparta_modo.domain.dto.MsgDto;
 import com.example.sparta_modo.domain.user.dto.SignUpDto;
 import com.example.sparta_modo.domain.user.security.JwtUtil;
 import com.example.sparta_modo.global.entity.User;

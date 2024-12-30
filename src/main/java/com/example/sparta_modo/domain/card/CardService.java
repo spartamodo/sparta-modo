@@ -7,7 +7,6 @@ import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.global.entity.Card;
 import com.example.sparta_modo.global.entity.CardHistory;
-import com.example.sparta_modo.global.entity.List;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.enums.Role;
@@ -16,45 +15,19 @@ import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CardService {
 
     private final CardRepository cardRepository;
-    private final ListRepository listRepository;
+    private final SequenceListRepository sequenceListRepository;
     private final UserRepository userRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
     private final CardHistoryRepository cardHistoryRepository;
 
-    // 카드 생성 메서드
-    public CardCreateDto createCard(User loginUser, CardCreateDto requestDto) {
-
-        // 리스트 조회 및 검증
-        List list = listRepository.findById(requestDto.getListId())
-                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 리스트ID 입니다."));
-
-        // 워크스페이스 접근 권한 검증
-        checkReadOnly(loginUser, list.getBoard().getWorkspace().getId());
-
-        // 담당자 조회 및 검증
-        User assignee = checkAssignee(requestDto.getAssigneeId());
-
-        // 엔티티 생성
-        Card card = requestDto.toEntity(list, assignee);
-
-        // 엔티티 저장
-        Card savedCard = cardRepository.save(card);
-
-        // 결과 반환 (빌더 패턴 적용)
-        return CardCreateDto.builder()
-                .listId(savedCard.getList().getId())
-                .name(savedCard.getName())
-                .description(savedCard.getDescription())
-                .deadline(savedCard.getDeadline())
-                .assigneeId(savedCard.getAssignee().getId())
-                .build();
-    }
-
+    // 유저 워크스페이스 조회 및 기능 검증
     private void checkReadOnly(User loginUser, Long workspaceId) {
         UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
 
@@ -68,11 +41,41 @@ public class CardService {
         }
     }
 
+    // 담당자 확인
     private User checkAssignee(Long requestDto) {
         // 담당자 조회 및 검증
         User assignee = userRepository.findById(requestDto)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 담당자 ID 입니다."));
         return assignee;
+    }
+
+    // 카드 생성 메서드
+    public CardCreateDto createCard(User loginUser, CardCreateDto requestDto) {
+
+        // 리스트 조회 및 검증
+        List list = sequenceListRepository.findById(requestDto.getSequenceListId())
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 리스트ID 입니다."));
+
+        // 워크스페이스 접근 권한 검증
+        checkReadOnly(loginUser, sequenceList.getBoard().getWorkspace().getId());
+
+        // 담당자 조회 및 검증
+        User assignee = checkAssignee(requestDto.getAssigneeId());
+
+        // 엔티티 생성
+        Card card = requestDto.toEntity(sequenceList, assignee);
+
+        // 엔티티 저장
+        Card savedCard = cardRepository.save(card);
+
+        // 결과 반환 (빌더 패턴 적용)
+        return CardCreateDto.builder()
+                .listId(savedCard.getSequenceList().getId())
+                .name(savedCard.getName())
+                .description(savedCard.getDescription())
+                .deadline(savedCard.getDeadline())
+                .assigneeId(savedCard.getAssignee().getId())
+                .build();
     }
 
     // 카드 수정 메서드
@@ -101,14 +104,26 @@ public class CardService {
                 .build();
     }
 
+    // 카드 조회 메서드
     public CardFindDto findCard(Long cardId) {
 
         // 카드 조회 및 검증
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
-        java.util.List<CardHistory> historyList = cardHistoryRepository.findByCardId(cardId);
+        List<CardHistory> historyList = cardHistoryRepository.findByCardId(cardId);
 
         return new CardFindDto(card, historyList);
+    }
+
+    public void deleteCard(Long cardId, User loginUser) {
+
+        // 카드 조회 및 검증
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
+
+        checkReadOnly(loginUser, card.getList().getBoard().getWorkspace().getId());
+
+        cardRepository.delete(card);
     }
 }

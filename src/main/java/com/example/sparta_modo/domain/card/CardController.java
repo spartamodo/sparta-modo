@@ -3,12 +3,14 @@ package com.example.sparta_modo.domain.card;
 import com.example.sparta_modo.domain.card.dto.CardCreateDto;
 import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
+import com.example.sparta_modo.domain.dto.MsgDto;
 import com.example.sparta_modo.global.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,5 +60,17 @@ public class CardController {
         CardFindDto findDto = cardService.findCard(cardId);
 
         return ResponseEntity.status(HttpStatus.OK).body(findDto);
+    }
+
+    // 카드 삭제
+    @DeleteMapping("/{cardId}")
+    public ResponseEntity<MsgDto> deleteCard(@PathVariable Long cardId, HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        CardService.deleteCard(cardId, loginUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new MsgDto("카드 삭제가 완료되었습니다."));
     }
 }

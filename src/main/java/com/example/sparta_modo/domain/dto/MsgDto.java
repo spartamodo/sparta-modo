@@ -1,4 +1,4 @@
-package com.example.sparta_modo.domain.user.dto;
+package com.example.sparta_modo.domain.dto;
 
 import lombok.Getter;
 
