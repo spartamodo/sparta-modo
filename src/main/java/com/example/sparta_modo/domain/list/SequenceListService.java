@@ -29,7 +29,7 @@ public class SequenceListService {
     private final Long GREEN_HOPPER_SEQ = 300L;
 
     public SequenceListDto.Response createList(User user, Long workspaceId, Long boardId, SequenceListDto.Request request) {
-        userAuthorization(user, workspaceId);
+//        userAuthorization(user, workspaceId);
 
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
 
@@ -57,8 +57,7 @@ public class SequenceListService {
     @Transactional
     public List<SequenceListDto.Response> updateSequence(User user, Long workspaceId, Long boardId, Long listId, @Valid Long moveTo) {
 
-        userAuthorization(user, workspaceId);
-
+//        userAuthorization(user, workspaceId);
 
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
         SequenceList findList = sequenceListRepository.findListByIdOrElseThrow(listId);
@@ -82,10 +81,22 @@ public class SequenceListService {
         Long maxPriority = sortedList.get(sortedList.size() - 1);
 
         if (moveTo == 1L) {
+            if (findList.getPriority().equals(minPriority)) {
+                throw new CommonException(ErrorCode.BAD_REQUEST, "같은 자리로 순서를 변경하지 못합니다.");
+            }
+
             return (long) (minPriority / 2.0);
         } else if (moveTo == sortedList.size()) {
+            if (findList.getPriority().equals(maxPriority)) {
+                throw new CommonException(ErrorCode.BAD_REQUEST, "같은 자리로 순서를 변경하지 못합니다.");
+            }
+
             return handlingMaxPriority(maxPriority);
         } else {
+            if (findList.getPriority().equals(sortedList.get((int) (moveTo - 1L)))) {
+                throw new CommonException(ErrorCode.BAD_REQUEST, "같은 자리로 순서를 변경하지 못합니다.");
+            }
+
             Long afterPriority = sortedList.get((int) (moveTo - 2L));
             Long beforePriority = sortedList.get((int) (moveTo - 1L));
 
