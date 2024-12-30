@@ -1,34 +1,58 @@
 package com.example.sparta_modo.domain.card.dto;
 
-import com.example.sparta_modo.global.entity.Card;
-import com.example.sparta_modo.global.entity.User;
-import lombok.Builder;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-@Getter
-@Builder
 public class CardUpdateDto {
 
-    private Long id;
+    @Getter
+    public static class Response {
 
-    private String name;
+        private Long id;
 
-    private String description;
+        private String name;
 
-    private LocalDateTime deadline;
+        private String description;
 
-    private Long assigneeId;
+        private LocalDate deadline;
 
-    private String changeLog;
+        private Long assigneeId;
 
-    public Card toEntity(User assignee) {
-        return Card.builder()
-                .name(name)
-                .description(description)
-                .deadline(deadline)
-                .assignee(assignee)
-                .build();
+        @NotEmpty
+        private String changeLog;
+
+        public Response(Long id, String name, String description, LocalDate deadline, Long assigneeId, String changeLog) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.deadline = deadline;
+            this.assigneeId = assigneeId;
+            this.changeLog = changeLog;
+        }
+    }
+
+    @Getter
+    public static class Request{
+
+        private String name;
+
+        private String description;
+
+        private LocalDate deadline;
+
+        private Long assigneeId;
+
+        @NotEmpty
+        private String changeLog;
+
+        public Request(String name, String description, LocalDate deadline, Long assigneeId, String changeLog){
+            this.name = name;
+            this.description = description;
+            this.deadline = deadline;
+            this.assigneeId = assigneeId;
+            this.changeLog = changeLog;
+        }
     }
 }

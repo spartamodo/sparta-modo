@@ -3,10 +3,10 @@ package com.example.sparta_modo.domain.card;
 import com.example.sparta_modo.domain.card.dto.CardCreateDto;
 import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
-import com.example.sparta_modo.domain.dto.MsgDto;
 import com.example.sparta_modo.domain.list.SequenceListRepository;
 import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
+import com.example.sparta_modo.global.dto.MsgDto;
 import com.example.sparta_modo.global.entity.Card;
 import com.example.sparta_modo.global.entity.CardHistory;
 import com.example.sparta_modo.global.entity.SequenceList;
@@ -17,8 +17,6 @@ import com.example.sparta_modo.global.exception.CommonException;
 import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -66,23 +64,16 @@ public class CardService {
         User assignee = checkAssignee(requestDto.getAssigneeId());
 
         // 엔티티 생성
-        Card card = requestDto.toEntity(sequenceList, assignee);
+        Card card = new Card(sequenceList, requestDto.getName(), requestDto.getDescription(), requestDto.getDeadline(), assignee);
 
         // 엔티티 저장
-        Card savedCard = cardRepository.save(card);
+        cardRepository.save(card);
 
-        // 결과 반환 (빌더 패턴 적용)
-        return CardCreateDto.builder()
-                .sequenceListId(savedCard.getSequenceList().getId())
-                .name(savedCard.getName())
-                .description(savedCard.getDescription())
-                .deadline(savedCard.getDeadline())
-                .assigneeId(savedCard.getAssignee().getId())
-                .build();
+        return new CardCreateDto(card.getSequenceList().getId(),card.getName(),card.getDescription(),card.getDeadline(),card.getAssignee().getId());
     }
 
     // 카드 수정 메서드
-    public CardUpdateDto updateCard(User loginUser, Long cardId, CardUpdateDto requestDto) {
+    public CardUpdateDto.Response updateCard(User loginUser, Long cardId, CardUpdateDto.Request requestDto) {
 
         // 카드 조회 및 검증
         Card card = cardRepository.findById(cardId)
@@ -98,16 +89,10 @@ public class CardService {
         card.updateCard(requestDto.getName(), requestDto.getDescription(), requestDto.getDeadline(), assignee);
 
         // 카드 변경 사항 저장
-        cardHistoryRepository.save(new CardHistory(card, requestDto.getChangeLog()));
+        CardHistory cardHistory = cardHistoryRepository.save(new CardHistory(card, requestDto.getChangeLog()));
 
         // 저장 및 반환 최적화
-        return CardUpdateDto.builder()
-                .id(card.getId())
-                .name(card.getName())
-                .description(card.getDescription())
-                .deadline(card.getDeadline())
-                .assigneeId(card.getAssignee().getId())
-                .build();
+        return new CardUpdateDto.Response(card.getId(),card.getName(),card.getDescription(),card.getDeadline(),card.getAssignee().getId(), cardHistory.getChangeLog());
     }
 
     // 카드 조회 메서드
@@ -117,9 +102,7 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
-        List<CardHistory> historyList = cardHistoryRepository.findByCardId(cardId);
-
-        return new CardFindDto(card, historyList);
+        return new CardFindDto(card);
     }
 
     // 카드 삭제 메서드

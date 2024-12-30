@@ -1,6 +1,6 @@
 package com.example.sparta_modo.domain.workspace;
 
-import com.example.sparta_modo.domain.dto.MsgDto;
+import com.example.sparta_modo.global.dto.MsgDto;
 import com.example.sparta_modo.domain.workspace.dto.UserWorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceInviteDto;
