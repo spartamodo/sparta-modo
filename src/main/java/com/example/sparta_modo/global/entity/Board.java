@@ -29,7 +29,7 @@ public class Board extends  BaseEntity{
     private String backgroundColor;
 
     @OneToMany(mappedBy = "board")
-    private List<com.example.sparta_modo.global.entity.List> list = new ArrayList<>();
+    private List<SequenceList> list = new ArrayList<>();
 
     @OneToOne(mappedBy = "board")
     private BoardImage boardImage;

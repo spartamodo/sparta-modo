@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity(name = "list")
+@Entity(name = "sequence_list")
 @NoArgsConstructor
-public class List {
+public class SequenceList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +23,13 @@ public class List {
     @Column(nullable = false)
     private Long priority;
 
-    public List (Board board, String title, Long priority) {
+    public SequenceList (Board board, String title, Long priority) {
         this.board = board;
         this.title = title;
         this.priority = priority;
     }
 
+    public void updatePriority(Long priority) {
+        this.priority = priority;
+    }
 }
