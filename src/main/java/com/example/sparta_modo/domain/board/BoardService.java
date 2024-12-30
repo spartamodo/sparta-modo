@@ -80,7 +80,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long workspaceId, Long boardId, BoardDto.UpdateRequest updateRequest) throws IOException {
+    public BoardDto.AllDetailResponse updateBoard(Long workspaceId, Long boardId, BoardDto.UpdateRequest updateRequest) throws IOException {
         workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 
@@ -99,6 +99,6 @@ public class BoardService {
         findBoard.updateDescription(updateRequest.getDescription());
         findBoard.updateImageActivated(updateRequest.getImageActivated());
         findBoard.updateBackgroundColor(updateRequest.getBackgroundColor());
-
+        return new BoardDto.AllDetailResponse(findBoard);
     }
 }

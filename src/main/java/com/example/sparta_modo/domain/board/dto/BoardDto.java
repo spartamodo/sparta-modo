@@ -1,5 +1,6 @@
 package com.example.sparta_modo.domain.board.dto;
 
+import com.example.sparta_modo.global.entity.Board;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -128,6 +129,25 @@ public class BoardDto {
         public ImageDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl) {
             super(boardId, title, description, imageActivated);
             this.imageUrl = imageUrl;
+        }
+    }
+
+    @Getter
+    public static class AllDetailResponse extends DetailResponseBaseDto {
+
+        private final String imageUrl;
+        private final String backgroundColor;
+
+        public AllDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl, String backgroundColor) {
+            super(boardId, title, description, imageActivated);
+            this.imageUrl = imageUrl;
+            this.backgroundColor = backgroundColor;
+        }
+
+        public AllDetailResponse(Board findBoard) {
+            super(findBoard.getId(), findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated());
+            this.imageUrl = findBoard.getBoardImage().getUrl();
+            this.backgroundColor = findBoard.getBackgroundColor();
         }
     }
 }

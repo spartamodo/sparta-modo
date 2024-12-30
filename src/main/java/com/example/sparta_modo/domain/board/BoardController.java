@@ -41,7 +41,7 @@ public class BoardController {
     public ResponseEntity<BoardDto.DetailResponseBaseDto> updateBoard(@PathVariable Long workspaceId,
                                                                       @PathVariable Long boardId,
                                                                       @Valid @ModelAttribute BoardDto.UpdateRequest request) throws IOException {
-        boardService.updateBoard(workspaceId, boardId, request);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        BoardDto.AllDetailResponse allDetailResponse = boardService.updateBoard(workspaceId, boardId, request);
+        return ResponseEntity.status(HttpStatus.OK).body(allDetailResponse);
     }
 }
