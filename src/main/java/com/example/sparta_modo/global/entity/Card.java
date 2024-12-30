@@ -41,7 +41,10 @@ public class Card extends BaseEntity {
     private User assignee;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CardHistory> changeLog;
+    private List<CardHistory> changeLogs;
+
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<File> files;
 
     public Card(SequenceList list, String name, String description, LocalDate deadline, User assignee) {
         this.sequenceList = list;

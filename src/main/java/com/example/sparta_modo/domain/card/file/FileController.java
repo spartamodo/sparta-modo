@@ -6,8 +6,6 @@ import com.example.sparta_modo.global.dto.MsgDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cards/{cardId}/files")
@@ -26,14 +25,13 @@ public class FileController {
 
     // 첨부파일 추가
     @PostMapping
-    public ResponseEntity<MsgDto> uploadFile(
+    public ResponseEntity<Map<String, Object>> uploadFile(
             @PathVariable Long cardId,
-            @ModelAttribute FileCreateDto files,
-            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+            @ModelAttribute FileCreateDto file) throws IOException {
 
-        fileService.uploadFiles(files, cardId, userDetails.getUsername());
+        Map<String, Object> response = fileService.uploadFiles(file, cardId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MsgDto("파일을 성공적으로 업로드 하였습니다."));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // 첨부파일 조회
