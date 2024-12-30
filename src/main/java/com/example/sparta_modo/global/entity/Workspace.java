@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Entity(name = "workspace")
 @NoArgsConstructor
+@DynamicUpdate
 public class Workspace extends BaseEntity{
 
     @Id
@@ -24,5 +26,14 @@ public class Workspace extends BaseEntity{
         this.id = id;
         this.title = title;
         this.description = description;
+    }
+
+    public void updateWorkspace(String title, String description) {
+        if(title != null && !title.isEmpty()) {
+            this.title = title;
+        }
+        if(description != null && !description.isEmpty()) {
+            this.description = description;
+        }
     }
 }
