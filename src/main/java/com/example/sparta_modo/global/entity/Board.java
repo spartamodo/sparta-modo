@@ -1,5 +1,6 @@
 package com.example.sparta_modo.global.entity;
 
+import com.example.sparta_modo.domain.board.dto.BoardDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,22 @@ public class Board {
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String title;
 
-    // todo: 이미지 해보고 고민해보기
-//    private String backColor;
+    @Column(columnDefinition = "text")
+    private String description;
 
+    private String backgroundColor;
 
+    @Column(nullable = false, columnDefinition = "bit")
+    private int imageActivated;
+
+    public Board (Workspace workspace, BoardDto.Request request) {
+        this.workspace = workspace;
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.backgroundColor = request.getBackgroundColor();
+        this.imageActivated = request.getImageActivated();
+    }
 }
