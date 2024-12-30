@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +25,29 @@ public class FileService {
     private final CardRepository cardRepository;
 
     // 파일 업로드
-    public void uploadFiles(FileCreateDto files, Long cardId, String username) throws IOException {
+    public Map<String, Object> uploadFiles(FileCreateDto file, Long cardId) throws IOException {
+
+        // Null 체크 추가
+        if (file.getFile() == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "파일을 찾을 수 없습니다.");
+        }
 
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
-        List<String> fileUrls = s3Service.uploadFiles(files, cardId);
+        List<String> fileUrls = s3Service.uploadFiles(file, cardId);
 
         for (String fileUrl : fileUrls) {
             File uploadedFile = new File(card, fileUrl);
 
             fileRepository.save(uploadedFile);
         }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("cardId", cardId);
+        response.put("fileUrls", fileUrls);
+
+        return response;
     }
 
     // 첨부파일 조회
@@ -43,9 +56,9 @@ public class FileService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
-        List<File> file = fileRepository.findByCard(card);
+        List<File> fileList = fileRepository.findByCard(card);
 
-        return new FileFindDto(cardId, file);
+        return new FileFindDto(cardId, fileList);
     }
 
     // 파일 삭제

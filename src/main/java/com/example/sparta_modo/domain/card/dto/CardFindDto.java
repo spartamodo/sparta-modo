@@ -18,7 +18,7 @@ public class CardFindDto {
         this.id = card.getId();
         this.name = card.getName();
         this.description = card.getDescription();
-        this.changeLog = card.getChangeLog().stream()
+        this.changeLog = card.getChangeLogs().stream()
                 .map(CardHistory::getChangeLog)
                 .collect(Collectors.toList());
     }
