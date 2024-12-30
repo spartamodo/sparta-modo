@@ -16,4 +16,6 @@ public interface UserWorkspaceRepository extends JpaRepository<UserWorkspace, Lo
 
     @Query("SELECT uw FROM user_workspace uw JOIN FETCH uw.workspace WHERE uw.user = :loginUser AND uw.workspace.id = :workspaceId")
     UserWorkspace findByWorkspaceIdAndUser(User loginUser,Long workspaceId);
+
+    boolean existsUserWorkspaceByUserAndWorkspace(User user, Workspace workspace);
 }
