@@ -1,6 +1,5 @@
 package com.example.sparta_modo.global.entity;
 
-import com.example.sparta_modo.global.entity.enums.Auth;
 import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import com.example.sparta_modo.global.entity.enums.Role;
 import jakarta.persistence.*;
@@ -20,7 +19,7 @@ public class UserWorkspace extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="workspace_id")
     private Workspace workspace;
 
@@ -41,5 +40,10 @@ public class UserWorkspace extends BaseEntity{
     // 사용자 역할 수정
     public void updateRole(String role) {
         this.role = Role.of(role);
+    }
+
+    // 사용자 초대 수락
+    public void acceptInvitingStatus() {
+        this.invitingStatus = InvitingStatus.ACCEPTED;
     }
 }

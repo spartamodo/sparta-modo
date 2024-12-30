@@ -1,6 +1,7 @@
 package com.example.sparta_modo.domain.workspace.dto;
 
 import com.example.sparta_modo.global.annotation.ValidEnum;
+import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.enums.Role;
 import lombok.Getter;
 
@@ -25,6 +26,14 @@ public class UserWorkspaceDto {
             this.workspaceId = workspaceId;
             this.userId = userId;
             this.role = role;
+        }
+
+        public static UserWorkspaceDto.Response toDto(UserWorkspace userWorkspace) {
+            return new UserWorkspaceDto.Response(
+                    userWorkspace.getWorkspace().getId(),
+                    userWorkspace.getUser().getId(),
+                    userWorkspace.getRole()
+            );
         }
     }
 }
