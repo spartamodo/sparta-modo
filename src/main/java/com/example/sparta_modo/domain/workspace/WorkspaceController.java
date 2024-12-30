@@ -2,11 +2,10 @@ package com.example.sparta_modo.domain.workspace;
 
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.global.entity.User;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +21,8 @@ public class WorkspaceController {
     @PostMapping
     public ResponseEntity<WorkspaceDto.Response> createWorkspace(
             @RequestBody WorkspaceDto.Request requestDto,
-            HttpServletRequest httpServletRequest){
+            @AuthenticationPrincipal User loginUser){
 
-        HttpSession session = httpServletRequest.getSession(false);
-        User loginUser = (User) session.getAttribute("loginUser");
 
         WorkspaceDto.Response response = workspaceService.createWorkspace(loginUser, requestDto);
 
@@ -34,15 +31,20 @@ public class WorkspaceController {
     // 워크스페이스 조회
     @GetMapping
     public ResponseEntity<List<WorkspaceDto.Response>> getWorkspace(
-            HttpServletRequest httpServletRequest){
+            @AuthenticationPrincipal User loginUser){
 
-        HttpSession session = httpServletRequest.getSession(false);
-        User loginUser = (User) session.getAttribute("loginUser");
         return ResponseEntity.status(HttpStatus.OK).body(workspaceService.getWorkspaces(loginUser));
     }
 
     // 워크스페이스 수정
+    @PatchMapping("/{workspaceId}")
+    public ResponseEntity<WorkspaceDto.Response> updateWorkspace(
+            @PathVariable Long workspaceId,
+            @RequestBody WorkspaceDto.Request requestDto,
+            @AuthenticationPrincipal User loginUser){
 
+        return ResponseEntity.status(HttpStatus.OK).body(workspaceService.updateWorkspace(loginUser,workspaceId,requestDto));
+    }
     // 워크스페이스 삭제
 
     // 워크스페이스 멤버 초대
