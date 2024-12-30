@@ -39,7 +39,7 @@ public class Board extends  BaseEntity{
     @Column(nullable = false, columnDefinition = "bit")
     private int imageActivated;
 
-    public Board (Workspace workspace, BoardDto.Request request) {
+    public Board (Workspace workspace, BoardDto.CreateRequest request) {
         this.workspace = workspace;
         this.title = request.getTitle();
         this.description = request.getDescription();

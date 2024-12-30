@@ -10,9 +10,43 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class BoardDto {
 
-    @AllArgsConstructor
     @Getter
     public static class Request {
+
+        private final MultipartFile[] image;
+
+        @NotBlank(message = "title 은 필수입니다.")
+        private final String title;
+
+        private final String description;
+
+        @NotBlank(message = "배경색 은 필수입니다.")
+        private final String backgroundColor;
+
+        @Min(0)
+        @Max(1)
+        private final int imageActivated;
+
+        public Request(UpdateRequest updateRequest) {
+            this.image = updateRequest.getImage();
+            this.title = updateRequest.getTitle();
+            this.description = updateRequest.getDescription();
+            this.backgroundColor = updateRequest.getBackgroundColor();
+            this.imageActivated = updateRequest.getImageActivated();
+        }
+
+        public Request(CreateRequest updateRequest) {
+            this.image = updateRequest.getImage();
+            this.title = updateRequest.getTitle();
+            this.description = updateRequest.getDescription();
+            this.backgroundColor = updateRequest.getBackgroundColor();
+            this.imageActivated = updateRequest.getImageActivated();
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class CreateRequest {
 
         private MultipartFile[] image;
 
@@ -27,13 +61,6 @@ public class BoardDto {
         @Min(0)
         @Max(1)
         private int imageActivated;
-
-        public Request(UpdateRequest updateRequest) {
-            this.image = updateRequest.getImage();
-            this.title = updateRequest.getTitle();
-            this.description = updateRequest.getDescription();
-            this.backgroundColor = updateRequest.getBackgroundColor();
-        }
     }
 
     @AllArgsConstructor

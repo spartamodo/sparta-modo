@@ -21,7 +21,7 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<BoardDto.ResponseBaseDto> createBoard(@PathVariable Long workspaceId,
-                                                                @Valid @ModelAttribute BoardDto.Request boardDto,
+                                                                @Valid @ModelAttribute BoardDto.CreateRequest boardDto,
                                                                 @AuthenticationPrincipal User user) {
 
         BoardDto.ResponseBaseDto boardResponse = boardService.createBoard(user, boardDto, workspaceId);

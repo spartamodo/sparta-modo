@@ -35,7 +35,7 @@ public class BoardService {
      * @return 보드 식별자 아이디, 제목, 이미지 url or 배경색
      */
     @Transactional
-    public BoardDto.ResponseBaseDto createBoard(User user, BoardDto.Request boardDto, Long workspaceId) {
+    public BoardDto.ResponseBaseDto createBoard(User user, BoardDto.CreateRequest boardDto, Long workspaceId) {
 
         userAuthorization(user, workspaceId);
 
@@ -48,7 +48,9 @@ public class BoardService {
         // 이미지 활성화 요청이면 이미지 저장 서비스
         if (boardDto.getImageActivated() == 1) {
             try {
-                String imageUrl = s3Service.uploadImage(boardDto, savedBoard.getId());
+                BoardDto.Request request = new BoardDto.Request(boardDto);
+
+                String imageUrl = s3Service.uploadImage(request, savedBoard.getId());
                 BoardImage boardImage = new BoardImage(savedBoard, imageUrl);
                 boardImageRepository.save(boardImage);
                 return new BoardDto.ExistImageResponse(savedBoard.getId(), savedBoard.getTitle(), boardImage.getUrl());
