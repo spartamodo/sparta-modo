@@ -46,4 +46,8 @@ public class User extends BaseEntity {
         userStatus = UserStatus.ACTIVATED;
     }
 
+    public void deleteUser(){
+        userStatus = UserStatus.DEACTIVATED;
+    }
+
 }

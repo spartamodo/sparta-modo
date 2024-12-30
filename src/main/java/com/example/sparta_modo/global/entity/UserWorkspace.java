@@ -20,7 +20,7 @@ public class UserWorkspace extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name ="workspace_id")
     private Workspace workspace;
 
@@ -38,5 +38,8 @@ public class UserWorkspace extends BaseEntity{
         this.invitingStatus = invitingStatus;
 
     }
-
+    // 사용자 역할 수정
+    public void updateRole(String role) {
+        this.role = Role.of(role);
+    }
 }
