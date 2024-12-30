@@ -47,4 +47,11 @@ public class Card extends BaseEntity {
         this.deadline = deadline;
         this.assignee = assignee;
     }
+
+    public void updateCard(String name, String description,LocalDateTime deadline,User assignee) {
+        this.name = name;
+        this.description = description;
+        this.deadline = deadline;
+        this.assignee = assignee;
+    }
 }
