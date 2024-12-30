@@ -21,6 +21,8 @@ public class CardUpdateDto {
 
     private Long assigneeId;
 
+    private String changeLog;
+
     public Card toEntity(User assignee) {
         return Card.builder()
                 .name(name)

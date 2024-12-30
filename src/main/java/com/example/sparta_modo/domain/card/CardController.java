@@ -69,8 +69,8 @@ public class CardController {
         HttpSession session = request.getSession();
         User loginUser = (User) session.getAttribute("loginUser");
 
-        CardService.deleteCard(cardId, loginUser);
+        MsgDto msgDto = cardService.deleteCard(cardId, loginUser);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new MsgDto("카드 삭제가 완료되었습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(msgDto);
     }
 }

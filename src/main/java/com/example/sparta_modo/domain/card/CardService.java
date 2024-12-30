@@ -3,6 +3,7 @@ package com.example.sparta_modo.domain.card;
 import com.example.sparta_modo.domain.card.dto.CardCreateDto;
 import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
+import com.example.sparta_modo.domain.dto.MsgDto;
 import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.global.entity.Card;
@@ -94,6 +95,9 @@ public class CardService {
         // 카드 정보 수정
         card.updateCard(requestDto.getName(), requestDto.getDescription(), requestDto.getDeadline(), assignee);
 
+        // 카드 변경 사항 저장
+        cardHistoryRepository.save(new CardHistory(card, requestDto.getChangeLog()));
+
         // 저장 및 반환 최적화
         return CardUpdateDto.builder()
                 .id(card.getId())
@@ -116,7 +120,8 @@ public class CardService {
         return new CardFindDto(card, historyList);
     }
 
-    public void deleteCard(Long cardId, User loginUser) {
+    // 카드 삭제 메서드
+    public MsgDto deleteCard(Long cardId, User loginUser) {
 
         // 카드 조회 및 검증
         Card card = cardRepository.findById(cardId)
@@ -125,5 +130,7 @@ public class CardService {
         checkReadOnly(loginUser, card.getList().getBoard().getWorkspace().getId());
 
         cardRepository.delete(card);
+
+        return new MsgDto("카드 삭제가 완료되었습니다.");
     }
 }
