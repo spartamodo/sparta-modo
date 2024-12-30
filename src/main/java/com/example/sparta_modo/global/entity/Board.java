@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity(name = "board")
 @NoArgsConstructor
@@ -24,6 +27,9 @@ public class Board extends  BaseEntity{
     private String description;
 
     private String backgroundColor;
+
+    @OneToMany(mappedBy = "board")
+    private List<com.example.sparta_modo.global.entity.List> list = new ArrayList<>();
 
     @OneToOne(mappedBy = "board")
     private BoardImage boardImage;

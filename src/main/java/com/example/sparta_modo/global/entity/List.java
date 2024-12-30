@@ -20,4 +20,13 @@ public class List {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private Long priority;
+
+    public List (Board board, String title, Long priority) {
+        this.board = board;
+        this.title = title;
+        this.priority = priority;
+    }
+
 }
