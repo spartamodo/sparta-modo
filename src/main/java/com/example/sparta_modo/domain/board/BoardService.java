@@ -27,6 +27,13 @@ public class BoardService {
     private final WorkspaceRepository workspaceRepository;
     private final UserWorkspaceRepository userWorkspaceRepository;
 
+    /**
+     * 이미지지와 보드 정보를 받아 저장하는 서비스
+     * @param user 현재 로그인 유저
+     * @param boardDto 제목(필수), 설명, 배경색(필수), 이미지
+     * @param workspaceId 워크스페이스 식별자 아이디
+     * @return 보드 식별자 아이디, 제목, 이미지 url or 배경색
+     */
     @Transactional
     public BoardDto.ResponseBaseDto createBoard(User user, BoardDto.Request boardDto, Long workspaceId) {
 
@@ -38,6 +45,7 @@ public class BoardService {
         Board board = new Board(findWorkspace, boardDto);
         Board savedBoard = boardRepository.save(board);
 
+        // 이미지 활성화 요청이면 이미지 저장 서비스
         if (boardDto.getImageActivated() == 1) {
             try {
                 String imageUrl = s3Service.uploadImage(boardDto, savedBoard.getId());
@@ -45,6 +53,7 @@ public class BoardService {
                 boardImageRepository.save(boardImage);
                 return new BoardDto.ExistImageResponse(savedBoard.getId(), savedBoard.getTitle(), boardImage.getUrl());
             } catch (SdkClientException | IOException e) {
+                // 이미지 저장 중 에러 시, 예외 핸들링
                 throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
