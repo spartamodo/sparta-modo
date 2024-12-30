@@ -28,7 +28,7 @@ public class BoardDto {
     }
 
     @Getter
-    public abstract static class ResponseBaseDto {
+    public static abstract class ResponseBaseDto {
         private final Long boardId;
 
         private final String title;
@@ -41,23 +41,66 @@ public class BoardDto {
     }
 
     @Getter
-    public static class generalResponse extends ResponseBaseDto {
+    public static class listResponse extends ResponseBaseDto {
+
+        public listResponse(Long boardId, String title) {
+            super(boardId, title);
+        }
+    }
+
+    @Getter
+    public static class backgroundColorResponse extends ResponseBaseDto {
 
         private final String backgroundColor;
 
-        public generalResponse(Long boardId, String title, String backgroundColor) {
+        public backgroundColorResponse(Long boardId, String title, String backgroundColor) {
             super(boardId, title);
             this.backgroundColor = backgroundColor;
         }
     }
 
     @Getter
-    public static class ExistImageResponse extends ResponseBaseDto {
+    public static class existImageResponse extends ResponseBaseDto {
 
         private final String imageUrl;
 
-        public ExistImageResponse(Long boardId, String title, String imageUrl) {
+        public existImageResponse(Long boardId, String title, String imageUrl) {
             super(boardId, title);
+            this.imageUrl = imageUrl;
+        }
+    }
+
+    @Getter
+    public static abstract class DetailResponseBaseDto extends ResponseBaseDto {
+
+        private final String description;
+        private final int imageActivated;
+
+        public DetailResponseBaseDto(Long boardId, String title, String description, int imageActivated) {
+            super(boardId, title);
+            this.description = description;
+            this.imageActivated = imageActivated;
+        }
+    }
+
+    @Getter
+    public static class backgroundColorDetailResponse extends DetailResponseBaseDto {
+
+        private final String backgroundColor;
+
+        public backgroundColorDetailResponse(Long boardId, String title, String description, int imageActivated, String backgroundColor) {
+            super(boardId, title, description, imageActivated);
+            this.backgroundColor = backgroundColor;
+        }
+    }
+
+    @Getter
+    public static class imageDetailResponse extends DetailResponseBaseDto {
+
+        private final String imageUrl;
+
+        public imageDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl) {
+            super(boardId, title, description, imageActivated);
             this.imageUrl = imageUrl;
         }
     }

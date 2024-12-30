@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity(name = "workspace")
 @NoArgsConstructor
@@ -20,6 +23,9 @@ public class Workspace extends BaseEntity{
     private String title;
 
     private String description;
+
+    @OneToMany(mappedBy = "workspace")
+    private List<Board> boards = new ArrayList<>();
 
     @Builder
     public Workspace(Long id, String title, String description) {

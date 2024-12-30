@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity(name = "board")
 @NoArgsConstructor
-public class Board {
+public class Board extends  BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,9 @@ public class Board {
     private String description;
 
     private String backgroundColor;
+
+    @OneToOne(mappedBy = "board")
+    private BoardImage boardImage;
 
     @Column(nullable = false, columnDefinition = "bit")
     private int imageActivated;
