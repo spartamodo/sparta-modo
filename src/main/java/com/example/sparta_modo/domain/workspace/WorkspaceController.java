@@ -1,9 +1,11 @@
 package com.example.sparta_modo.domain.workspace;
 
 import com.example.sparta_modo.domain.user.dto.MsgDto;
+import com.example.sparta_modo.domain.workspace.dto.UserWorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceInviteDto;
 import com.example.sparta_modo.global.entity.User;
+import com.example.sparta_modo.global.entity.UserWorkspace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
+    private final UserWorkspaceRepository userWorkspaceRepository;
 
     // 워크스페이스 생성
     @PostMapping
@@ -71,8 +74,17 @@ public class WorkspaceController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // 워크스페이스 멤버 초대 수락
-
     // 멤버 역할 수정
+    @PatchMapping("/{workspaceId}/users/{userId}/roles")
+    public ResponseEntity<UserWorkspaceDto.Response> modifyRole(
+            @PathVariable Long workspaceId,
+            @PathVariable Long userId,
+            @RequestBody UserWorkspaceDto.Request request,
+            @AuthenticationPrincipal User loginUser
+    ){
+        UserWorkspaceDto.Response response = workspaceService.modifyRole(workspaceId,userId,request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
 
