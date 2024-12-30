@@ -26,6 +26,7 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public String uploadImage(BoardDto.Request boardDto, Long boardId) throws IOException {
+
         if(boardDto.getImage().length != 1) {
             throw new ImageException(ImageErrorCode.TOO_MANY_FILES);
         }

@@ -40,21 +40,21 @@ public class BoardService {
                 String imageUrl = s3Service.uploadImage(boardDto, savedBoard.getId());
                 BoardImage boardImage = new BoardImage(savedBoard, imageUrl);
                 boardImageRepository.save(boardImage);
-                return new BoardDto.existImageResponse(savedBoard.getId(), savedBoard.getTitle(), boardImage.getUrl());
+                return new BoardDto.ExistImageResponse(savedBoard.getId(), savedBoard.getTitle(), boardImage.getUrl());
             } catch (SdkClientException | IOException e) {
                 throw new ImageException(ImageErrorCode.FAILED_UPLOAD_IMAGE);
             }
         }
 
-        return new BoardDto.backgroundColorResponse(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getBackgroundColor());
+        return new BoardDto.BackgroundColorResponse(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getBackgroundColor());
     }
 
-    public List<BoardDto.listResponse> getBoards(Long workspaceId) {
+    public List<BoardDto.ListResponse> getBoards(Long workspaceId) {
         Workspace findWorkspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 
         return findWorkspace.getBoards().stream()
-                .map(board -> new BoardDto.listResponse(
+                .map(board -> new BoardDto.ListResponse(
                         board.getId(),
                         board.getTitle()))
                 .toList();
@@ -73,11 +73,32 @@ public class BoardService {
                 throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "보드를 찾을 수 없음");
             }
 
-            return new BoardDto.imageDetailResponse(boardId, findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated(), findBoard.getBoardImage().getUrl());
+            return new BoardDto.ImageDetailResponse(boardId, findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated(), findBoard.getBoardImage().getUrl());
         }
 
-        return new BoardDto.backgroundColorDetailResponse(boardId, findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated(), findBoard.getBackgroundColor());
+        return new BoardDto.BackgroundColorDetailResponse(boardId, findBoard.getTitle(), findBoard.getDescription(), findBoard.getImageActivated(), findBoard.getBackgroundColor());
     }
 
+    @Transactional
+    public void updateBoard(Long workspaceId, Long boardId, BoardDto.UpdateRequest updateRequest) throws IOException {
+        workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 
+        Board findBoard = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "보드를 찾을 수 없음"));
+
+        if (updateRequest.getImageActivated() == 1 ) {
+            if (updateRequest.getImage() == null) {
+                throw new CommonException(ErrorCode.BAD_REQUEST, "이미지가 없음");
+            }
+            BoardDto.Request transfromToRequest = new BoardDto.Request(updateRequest);
+            s3Service.uploadImage(transfromToRequest, findBoard.getId());
+        }
+
+        findBoard.updateTitle(updateRequest.getTitle());
+        findBoard.updateDescription(updateRequest.getDescription());
+        findBoard.updateImageActivated(updateRequest.getImageActivated());
+        findBoard.updateBackgroundColor(updateRequest.getBackgroundColor());
+
+    }
 }

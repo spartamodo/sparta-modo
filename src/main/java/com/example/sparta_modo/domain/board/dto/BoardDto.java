@@ -1,7 +1,8 @@
 package com.example.sparta_modo.domain.board.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,8 +23,33 @@ public class BoardDto {
         @NotBlank(message = "배경색 은 필수입니다.")
         private String backgroundColor;
 
-        @NotNull(message = "이미지 적용 은 필수입니다.")
+        @Min(0)
+        @Max(1)
         private int imageActivated;
+
+        public Request(UpdateRequest updateRequest) {
+            this.image = updateRequest.getImage();
+            this.title = updateRequest.getTitle();
+            this.description = updateRequest.getDescription();
+            this.backgroundColor = updateRequest.getBackgroundColor();
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class UpdateRequest {
+
+        private MultipartFile[] image;
+
+        private String title;
+
+        private String description;
+
+        private String backgroundColor;
+
+        @Min(0)
+        @Max(1)
+        private Integer imageActivated;
 
     }
 
@@ -41,30 +67,30 @@ public class BoardDto {
     }
 
     @Getter
-    public static class listResponse extends ResponseBaseDto {
+    public static class ListResponse extends ResponseBaseDto {
 
-        public listResponse(Long boardId, String title) {
+        public ListResponse(Long boardId, String title) {
             super(boardId, title);
         }
     }
 
     @Getter
-    public static class backgroundColorResponse extends ResponseBaseDto {
+    public static class BackgroundColorResponse extends ResponseBaseDto {
 
         private final String backgroundColor;
 
-        public backgroundColorResponse(Long boardId, String title, String backgroundColor) {
+        public BackgroundColorResponse(Long boardId, String title, String backgroundColor) {
             super(boardId, title);
             this.backgroundColor = backgroundColor;
         }
     }
 
     @Getter
-    public static class existImageResponse extends ResponseBaseDto {
+    public static class ExistImageResponse extends ResponseBaseDto {
 
         private final String imageUrl;
 
-        public existImageResponse(Long boardId, String title, String imageUrl) {
+        public ExistImageResponse(Long boardId, String title, String imageUrl) {
             super(boardId, title);
             this.imageUrl = imageUrl;
         }
@@ -84,22 +110,22 @@ public class BoardDto {
     }
 
     @Getter
-    public static class backgroundColorDetailResponse extends DetailResponseBaseDto {
+    public static class BackgroundColorDetailResponse extends DetailResponseBaseDto {
 
         private final String backgroundColor;
 
-        public backgroundColorDetailResponse(Long boardId, String title, String description, int imageActivated, String backgroundColor) {
+        public BackgroundColorDetailResponse(Long boardId, String title, String description, int imageActivated, String backgroundColor) {
             super(boardId, title, description, imageActivated);
             this.backgroundColor = backgroundColor;
         }
     }
 
     @Getter
-    public static class imageDetailResponse extends DetailResponseBaseDto {
+    public static class ImageDetailResponse extends DetailResponseBaseDto {
 
         private final String imageUrl;
 
-        public imageDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl) {
+        public ImageDetailResponse(Long boardId, String title, String description, int imageActivated, String imageUrl) {
             super(boardId, title, description, imageActivated);
             this.imageUrl = imageUrl;
         }
