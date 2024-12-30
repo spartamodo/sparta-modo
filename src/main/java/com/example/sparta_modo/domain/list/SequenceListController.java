@@ -28,7 +28,7 @@ public class SequenceListController {
     @PatchMapping("/{listId}")
     public ResponseEntity<List<SequenceListDto.Response>> updateSequence(@PathVariable Long boardId,
                                             @PathVariable Long listId,
-                                            @Valid @RequestParam Long moveTo) {
+                                            @RequestParam Long moveTo) {
 
         List<SequenceListDto.Response> sequenceLists = listService.updateSequence(boardId, listId, moveTo);
         return ResponseEntity.status(HttpStatus.OK).body(sequenceLists);

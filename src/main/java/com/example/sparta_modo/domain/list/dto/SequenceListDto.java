@@ -1,7 +1,6 @@
 package com.example.sparta_modo.domain.list.dto;
 
 import com.example.sparta_modo.global.entity.SequenceList;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -12,7 +11,6 @@ public class SequenceListDto {
         @NotBlank(message = "제목을 입력해주세요")
         private final String title;
 
-        @JsonCreator
         public Request(String title) {
             this.title = title;
         }
