@@ -51,7 +51,9 @@ public class S3ServiceImpl implements S3Service {
 
         StringBuilder basePackageName = new StringBuilder(BUCKET);
 
-        StringBuilder secondPackageName = new StringBuilder("/").append(imageFormat.name());
+        StringBuilder secondPackageName = new StringBuilder(imageFormat.getPath());
+
+
         String s3FileName = String.valueOf(id);
 
         if (imageFormat == CARD) {

@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ImageFormat {
-    CARD("/card", new String[]{".jpg", ".png", ".pdf", ".csv"}),
-    BOARD("/board", new String[]{".jpg", "png"});
+    CARD("/CARD", new String[]{".jpg", ".png", ".pdf", ".csv"}),
+    BOARD("/BOARD", new String[]{".jpg", "png"});
 
     private final String path;
     private final String[] whiteList;
