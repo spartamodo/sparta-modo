@@ -1,7 +1,7 @@
 package com.example.sparta_modo.domain.card.dto;
 
 import com.example.sparta_modo.global.entity.Card;
-import com.example.sparta_modo.global.entity.List;
+import com.example.sparta_modo.global.entity.SequenceList;
 import com.example.sparta_modo.global.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -16,7 +16,7 @@ public class CardCreateDto {
 
     @NotBlank(message = "리스트 ID는 필수 입력값입니다.")
     @Positive(message = "리스트 ID는 양수여야 합니다.")
-    private Long listId;
+    private Long sequenceListId;
 
     @NotBlank(message = "카드 이름은 필수 입력값입니다.")
     private String name;
@@ -29,9 +29,9 @@ public class CardCreateDto {
     @Positive(message = "담당자 ID는 양수여야 합니다.")
     private Long assigneeId;
 
-    public Card toEntity(List list, User assignee) {
+    public Card toEntity(SequenceList sequenceListId, User assignee) {
         return Card.builder()
-                .list(list)
+                .list(sequenceListId)
                 .name(name)
                 .description(description)
                 .deadline(deadline)

@@ -4,10 +4,12 @@ import com.example.sparta_modo.domain.card.dto.CardCreateDto;
 import com.example.sparta_modo.domain.card.dto.CardFindDto;
 import com.example.sparta_modo.domain.card.dto.CardUpdateDto;
 import com.example.sparta_modo.domain.dto.MsgDto;
+import com.example.sparta_modo.domain.list.SequenceListRepository;
 import com.example.sparta_modo.domain.user.UserRepository;
 import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.global.entity.Card;
 import com.example.sparta_modo.global.entity.CardHistory;
+import com.example.sparta_modo.global.entity.SequenceList;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.enums.Role;
@@ -54,7 +56,7 @@ public class CardService {
     public CardCreateDto createCard(User loginUser, CardCreateDto requestDto) {
 
         // 리스트 조회 및 검증
-        List list = sequenceListRepository.findById(requestDto.getSequenceListId())
+        SequenceList sequenceList = sequenceListRepository.findById(requestDto.getSequenceListId())
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 리스트ID 입니다."));
 
         // 워크스페이스 접근 권한 검증
@@ -71,7 +73,7 @@ public class CardService {
 
         // 결과 반환 (빌더 패턴 적용)
         return CardCreateDto.builder()
-                .listId(savedCard.getSequenceList().getId())
+                .sequenceListId(savedCard.getSequenceList().getId())
                 .name(savedCard.getName())
                 .description(savedCard.getDescription())
                 .deadline(savedCard.getDeadline())
@@ -87,7 +89,7 @@ public class CardService {
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
         // 워크스페이스 접근 권한 검증
-        checkReadOnly(loginUser, card.getList().getBoard().getWorkspace().getId());
+        checkReadOnly(loginUser, card.getSequenceList().getBoard().getWorkspace().getId());
 
         // 담당자 조회 및 검증
         User assignee = checkAssignee(requestDto.getAssigneeId());
@@ -127,7 +129,7 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "존재하지 않는 카드 ID 입니다."));
 
-        checkReadOnly(loginUser, card.getList().getBoard().getWorkspace().getId());
+        checkReadOnly(loginUser, card.getSequenceList().getBoard().getWorkspace().getId());
 
         cardRepository.delete(card);
 

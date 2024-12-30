@@ -39,9 +39,9 @@ public class Card extends BaseEntity {
     private User assignee;
 
     @Builder
-    public Card(Long id, List list, String name, String description, LocalDateTime deadline, User assignee) {
+    public Card(Long id, SequenceList list, String name, String description, LocalDateTime deadline, User assignee) {
         this.id = id;
-        this.list = list;
+        this.sequenceList = list;
         this.name = name;
         this.description = description;
         this.deadline = deadline;
