@@ -101,10 +101,10 @@ public class UserController {
 	}
 
 	// 워크스페이스 초대 수락,거부
-	@PatchMapping("/workspaces/{workspaceId}/inviting/decide/{decide}")
+	@PatchMapping("/workspaces/{workspaceId}/inviting/decide")
 	public ResponseEntity<MsgDto> decideInviting(
 			@PathVariable Long workspaceId,
-			@PathVariable Boolean decide,
+			@RequestParam Boolean decide,
 			@AuthenticationPrincipal User loginUser
 	){
 		boolean result = workspaceService.acceptInviting(loginUser,workspaceId,decide);
