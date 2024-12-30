@@ -87,7 +87,7 @@ public class WorkspaceService {
             throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 workspace 를 찾을 수 없습니다.");
         }
 
-        userWorkspaceRepository.deleteById(userWorkspace.getId());
+        workspaceRepository.deleteById(workspaceId);
     }
 
     // 워크스페이스 멤버 초대
