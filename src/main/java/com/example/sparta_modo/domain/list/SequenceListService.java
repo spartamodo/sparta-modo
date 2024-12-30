@@ -2,8 +2,11 @@ package com.example.sparta_modo.domain.list;
 
 import com.example.sparta_modo.domain.board.BoardRepository;
 import com.example.sparta_modo.domain.list.dto.SequenceListDto;
+import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.global.entity.Board;
 import com.example.sparta_modo.global.entity.SequenceList;
+import com.example.sparta_modo.global.entity.User;
+import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.exception.CommonException;
 import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -20,10 +23,14 @@ public class SequenceListService {
 
     private final SequenceListRepository sequenceListRepository;
     private final BoardRepository boardRepository;
+    private final UserWorkspaceRepository userWorkspaceRepository;
+
     private final Long FIRST_PRIORITY = 300L;
     private final Long GREEN_HOPPER_SEQ = 300L;
 
-    public SequenceListDto.Response createList(Long boardId, SequenceListDto.Request request) {
+    public SequenceListDto.Response createList(User user, Long workspaceId, Long boardId, SequenceListDto.Request request) {
+        userAuthorization(user, workspaceId);
+
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
 
         // 해당 보드의 가장 높은 우선순위값을 찾음
@@ -48,7 +55,11 @@ public class SequenceListService {
     }
 
     @Transactional
-    public List<SequenceListDto.Response> updateSequence(Long boardId, Long listId, @Valid Long moveTo) {
+    public List<SequenceListDto.Response> updateSequence(User user, Long workspaceId, Long boardId, Long listId, @Valid Long moveTo) {
+
+        userAuthorization(user, workspaceId);
+
+
         Board findBoard = boardRepository.findBoardByIdOrElseThrow(boardId);
         SequenceList findList = sequenceListRepository.findListByIdOrElseThrow(listId);
 
@@ -87,5 +98,13 @@ public class SequenceListService {
         }
     }
 
+    private void userAuthorization(User user, Long workspaceId) {
+        UserWorkspace userWorkspace
+                = userWorkspaceRepository.findByWorkspaceIdAndUser(user, workspaceId);
+
+        if (userWorkspace == null) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "해당 워크스페이스에 대한 접근 권한이 없습니다.");
+        }
+    }
 
 }

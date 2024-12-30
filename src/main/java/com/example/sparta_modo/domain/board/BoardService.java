@@ -2,10 +2,9 @@ package com.example.sparta_modo.domain.board;
 
 import com.amazonaws.SdkClientException;
 import com.example.sparta_modo.domain.board.dto.BoardDto;
+import com.example.sparta_modo.domain.workspace.UserWorkspaceRepository;
 import com.example.sparta_modo.domain.workspace.WorkspaceRepository;
-import com.example.sparta_modo.global.entity.Board;
-import com.example.sparta_modo.global.entity.BoardImage;
-import com.example.sparta_modo.global.entity.Workspace;
+import com.example.sparta_modo.global.entity.*;
 import com.example.sparta_modo.global.exception.CommonException;
 import com.example.sparta_modo.global.exception.ImageException;
 import com.example.sparta_modo.global.exception.errorcode.ErrorCode;
@@ -26,9 +25,13 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardImageRepository boardImageRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final UserWorkspaceRepository userWorkspaceRepository;
 
     @Transactional
-    public BoardDto.ResponseBaseDto createBoard(BoardDto.Request boardDto, Long workspaceId) {
+    public BoardDto.ResponseBaseDto createBoard(User user, BoardDto.Request boardDto, Long workspaceId) {
+
+        userAuthorization(user, workspaceId);
+
         Workspace findWorkspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 
@@ -47,6 +50,15 @@ public class BoardService {
         }
 
         return new BoardDto.BackgroundColorResponse(savedBoard.getId(), savedBoard.getTitle(), savedBoard.getBackgroundColor());
+    }
+
+    private void userAuthorization(User user, Long workspaceId) {
+        UserWorkspace userWorkspace
+                = userWorkspaceRepository.findByWorkspaceIdAndUser(user, workspaceId);
+
+        if (userWorkspace == null) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "해당 워크스페이스에 대한 접근 권한이 없습니다.");
+        }
     }
 
     public List<BoardDto.ListResponse> getBoards(Long workspaceId) {
@@ -80,7 +92,10 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardDto.AllDetailResponse updateBoard(Long workspaceId, Long boardId, BoardDto.UpdateRequest updateRequest) throws IOException {
+    public BoardDto.AllDetailResponse updateBoard(User user, Long workspaceId, Long boardId, BoardDto.UpdateRequest updateRequest) throws IOException {
+
+        userAuthorization(user, workspaceId);
+
         workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND_VALUE, "워크스페이스 찾을 수 없음"));
 

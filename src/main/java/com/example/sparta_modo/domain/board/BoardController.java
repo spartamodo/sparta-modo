@@ -1,10 +1,12 @@
 package com.example.sparta_modo.domain.board;
 
 import com.example.sparta_modo.domain.board.dto.BoardDto;
+import com.example.sparta_modo.global.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -19,8 +21,10 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<BoardDto.ResponseBaseDto> createBoard(@PathVariable Long workspaceId,
-                                                                @Valid @ModelAttribute BoardDto.Request boardDto) {
-        BoardDto.ResponseBaseDto boardResponse = boardService.createBoard(boardDto, workspaceId);
+                                                                @Valid @ModelAttribute BoardDto.Request boardDto,
+                                                                @AuthenticationPrincipal User user) {
+
+        BoardDto.ResponseBaseDto boardResponse = boardService.createBoard(user, boardDto, workspaceId);
         return ResponseEntity.status(HttpStatus.CREATED).body(boardResponse);
     }
 
@@ -40,8 +44,9 @@ public class BoardController {
     @PatchMapping("/{boardId}")
     public ResponseEntity<BoardDto.DetailResponseBaseDto> updateBoard(@PathVariable Long workspaceId,
                                                                       @PathVariable Long boardId,
-                                                                      @Valid @ModelAttribute BoardDto.UpdateRequest request) throws IOException {
-        BoardDto.AllDetailResponse allDetailResponse = boardService.updateBoard(workspaceId, boardId, request);
+                                                                      @Valid @ModelAttribute BoardDto.UpdateRequest request,
+                                                                      @AuthenticationPrincipal User user) throws IOException {
+        BoardDto.AllDetailResponse allDetailResponse = boardService.updateBoard(user, workspaceId, boardId, request);
         return ResponseEntity.status(HttpStatus.OK).body(allDetailResponse);
     }
 }
