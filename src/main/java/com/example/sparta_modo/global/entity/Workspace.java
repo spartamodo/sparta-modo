@@ -27,6 +27,9 @@ public class Workspace extends BaseEntity{
     @OneToMany(mappedBy = "workspace")
     private List<Board> boards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.REMOVE)
+    private List<UserWorkspace> userWorkspaces = new ArrayList<>();
+
     @Builder
     public Workspace(Long id, String title, String description) {
         this.id = id;
