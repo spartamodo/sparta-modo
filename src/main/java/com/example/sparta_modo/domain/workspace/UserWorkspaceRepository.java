@@ -3,6 +3,7 @@ package com.example.sparta_modo.domain.workspace;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.Workspace;
+import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,6 @@ public interface UserWorkspaceRepository extends JpaRepository<UserWorkspace, Lo
     boolean existsUserWorkspaceByUserAndWorkspace(User user, Workspace workspace);
 
     UserWorkspace findByUserIdAndWorkspaceId(Long userId, Long workspaceId);
+
+    List<UserWorkspace> findByUserAndInvitingStatus(User loginUser, InvitingStatus invitingStatus);
 }
