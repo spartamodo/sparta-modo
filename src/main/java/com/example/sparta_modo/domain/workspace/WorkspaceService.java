@@ -7,6 +7,7 @@ import com.example.sparta_modo.domain.workspace.dto.WorkspaceInviteDto;
 import com.example.sparta_modo.global.entity.User;
 import com.example.sparta_modo.global.entity.UserWorkspace;
 import com.example.sparta_modo.global.entity.Workspace;
+import com.example.sparta_modo.global.entity.enums.Auth;
 import com.example.sparta_modo.global.entity.enums.InvitingStatus;
 import com.example.sparta_modo.global.entity.enums.Role;
 import com.example.sparta_modo.global.exception.CommonException;
@@ -65,8 +66,8 @@ public class WorkspaceService {
     @Transactional
     public WorkspaceDto.Response updateWorkspace(User loginUser, Long workspaceId,
                                                  WorkspaceDto.Request requestDto) {
-
-        UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
+        //권한 검증 및 userWorkspace 반환
+        UserWorkspace userWorkspace = forbiddenAccess(loginUser, workspaceId);
 
         if (userWorkspace == null) {
             throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "사용자의 workspace 를 찾을 수 없습니다.");
@@ -81,6 +82,10 @@ public class WorkspaceService {
     @Transactional
     public void deleteWorkspace(User loginUser, Long workspaceId) {
 
+        if(loginUser.getAuth() != Auth.ADMIN){
+            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "권한이 없습니다.");
+        }
+
         UserWorkspace userWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
 
         if(userWorkspace == null) {
@@ -93,6 +98,9 @@ public class WorkspaceService {
     // 워크스페이스 멤버 초대
     @Transactional
     public WorkspaceInviteDto.Response inviteUserWorkspace(User loginUser, WorkspaceInviteDto.Request request, Long workspaceId) {
+        // 권한 검증
+        forbiddenAccess(loginUser, workspaceId);
+
         // 멤버 이메일로 멤버찾기
         User user = userRepository.findUserByEmail(request.getEmail());
 
@@ -118,11 +126,18 @@ public class WorkspaceService {
 
     // 워크스페이스 멤버 역할 수정
     @Transactional
-    public UserWorkspaceDto.Response modifyRole(Long workspaceId, Long userId, UserWorkspaceDto.Request request) {
+    public UserWorkspaceDto.Response modifyRole(User loginUser,Long workspaceId, Long userId, UserWorkspaceDto.Request request) {
+        // 권한 검증
+        forbiddenAccess(loginUser, workspaceId);
 
         UserWorkspace userWorkspace = userWorkspaceRepository.findByUserIdAndWorkspaceId(userId,workspaceId);
+
         if(userWorkspace == null) {
             throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 사용자의 워크스페이스를 찾을 수 없습니다.");
+        }
+        // 변경하려는 역할이 ADMIN 일 경우 예외처리
+        if(Role.of(request.getRole()).equals(Role.ADMIN)){
+            throw new WorkspaceException(WorkspaceErrorCode.IMPOSSIBLE_MODIFY);
         }
         // 역할 수정
         userWorkspace.updateRole(request.getRole());
@@ -161,5 +176,14 @@ public class WorkspaceService {
         userWorkspaceRepository.delete(userWorkspace);
         return false;
 
+    }
+
+    public UserWorkspace forbiddenAccess(User loginUser, Long workspaceId) {
+        UserWorkspace adminUserWorkspace = userWorkspaceRepository.findByWorkspaceIdAndUser(loginUser, workspaceId);
+        if(adminUserWorkspace.getRole() != Role.ADMIN && adminUserWorkspace.getRole() != Role.MANAGER) {
+            throw new CommonException(ErrorCode.FORBIDDEN_ACCESS, "권한이 없습니다.");
+        }
+
+        return adminUserWorkspace;
     }
 }

@@ -82,7 +82,7 @@ public class WorkspaceController {
             @RequestBody UserWorkspaceDto.Request request,
             @AuthenticationPrincipal User loginUser
     ){
-        UserWorkspaceDto.Response response = workspaceService.modifyRole(workspaceId,userId,request);
+        UserWorkspaceDto.Response response = workspaceService.modifyRole(loginUser, workspaceId,userId,request);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
