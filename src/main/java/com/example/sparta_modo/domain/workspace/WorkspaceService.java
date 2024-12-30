@@ -1,6 +1,7 @@
 package com.example.sparta_modo.domain.workspace;
 
 import com.example.sparta_modo.domain.user.UserRepository;
+import com.example.sparta_modo.domain.workspace.dto.UserWorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceDto;
 import com.example.sparta_modo.domain.workspace.dto.WorkspaceInviteDto;
 import com.example.sparta_modo.global.entity.User;
@@ -111,5 +112,19 @@ public class WorkspaceService {
         //TODO 알림 기능 추가 ex) loginUser 님이 workspace에 user님을 초대하셨습니다.
 
         return new WorkspaceInviteDto.Response(workspaceId,user.getId(),user.getEmail());
+    }
+
+    // 워크스페이스 멤버 역할 수정
+    @Transactional
+    public UserWorkspaceDto.Response modifyRole(Long workspaceId, Long userId, UserWorkspaceDto.Request request) {
+
+        UserWorkspace userWorkspace = userWorkspaceRepository.findByUserIdAndWorkspaceId(userId,workspaceId);
+        if(userWorkspace == null) {
+            throw new CommonException(ErrorCode.NOT_FOUND_VALUE, "해당 사용자의 워크스페이스를 찾을 수 없습니다.");
+        }
+        // 역할 수정
+        userWorkspace.updateRole(request.getRole());
+
+        return new UserWorkspaceDto.Response(workspaceId,userId,userWorkspace.getRole());
     }
 }

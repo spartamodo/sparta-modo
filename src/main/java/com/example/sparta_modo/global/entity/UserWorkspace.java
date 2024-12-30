@@ -38,5 +38,8 @@ public class UserWorkspace extends BaseEntity{
         this.invitingStatus = invitingStatus;
 
     }
-
+    // 사용자 역할 수정
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }
