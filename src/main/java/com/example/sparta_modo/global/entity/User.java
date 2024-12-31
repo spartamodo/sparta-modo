@@ -2,7 +2,14 @@ package com.example.sparta_modo.global.entity;
 
 import com.example.sparta_modo.global.entity.enums.Auth;
 import com.example.sparta_modo.global.entity.enums.UserStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +36,18 @@ public class User extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private Auth auth;
+
+    @Builder
+    public User(String email, String password, String nickname, Auth auth) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.auth = auth;
+        userStatus = UserStatus.ACTIVATED;
+    }
+
+    public void deleteUser(){
+        userStatus = UserStatus.DEACTIVATED;
+    }
 
 }

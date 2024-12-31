@@ -1,26 +1,65 @@
 package com.example.sparta_modo.global.entity;
 
+import com.example.sparta_modo.domain.board.dto.BoardDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity(name = "board")
 @NoArgsConstructor
-public class Board {
+@DynamicUpdate
+public class Board extends  BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String title;
 
-    // todo: 이미지 해보고 고민해보기
-//    private String backColor;
+    @Column(columnDefinition = "text")
+    private String description;
 
+    private String backgroundColor;
 
+    @OneToMany(mappedBy = "board" , cascade = CascadeType.ALL)
+    private List<SequenceList> list = new ArrayList<>();
+
+    @OneToOne(mappedBy = "board" , cascade = CascadeType.ALL )
+    private BoardImage boardImage;
+
+    @Column(nullable = false, columnDefinition = "bit")
+    private int imageActivated;
+
+    public Board (Workspace workspace, BoardDto.CreateRequest request) {
+        this.workspace = workspace;
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.backgroundColor = request.getBackgroundColor();
+        this.imageActivated = request.getImageActivated();
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void updateImageActivated(Integer imageActivated) {
+        this.imageActivated = imageActivated;
+    }
 }

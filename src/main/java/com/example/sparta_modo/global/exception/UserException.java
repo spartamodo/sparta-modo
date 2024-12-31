@@ -21,16 +21,11 @@ public class UserException extends ParentException{
 
     @Override
     public ErrorResponseDto toErrorResponseDto() {
-        //return ErrorResponseDto.builder()
-        //todo
-        return null;
+        return ErrorResponseDto.builder()
+            .status(errorCode.getHttpStatus().value())
+            .error(errorCode.getHttpStatus().getReasonPhrase())
+            .code(errorCode.toString())
+            .massage(errorCode.getDetail())
+            .build();
     }
 }
-
-//{
-//        "status": 400,
-//        "error": "BAD_REQUEST",
-//        "code": "BAD_REQUEST_YEAR_MONTH",
-//        "massage": "연도 혹은 달을 잘못 입력하셨습니다.",
-//        "timestamp": "2024-12-06T02:10:46.0556937"
-//        }
