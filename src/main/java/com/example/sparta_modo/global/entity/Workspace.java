@@ -24,7 +24,7 @@ public class Workspace extends BaseEntity{
 
     private String description;
 
-    @OneToMany(mappedBy = "workspace")
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.REMOVE)
     private List<Board> boards = new ArrayList<>();
 
     @OneToMany(mappedBy = "workspace", cascade = CascadeType.REMOVE)

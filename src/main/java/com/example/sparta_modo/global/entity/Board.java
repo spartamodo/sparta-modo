@@ -18,7 +18,7 @@ public class Board extends  BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
@@ -30,10 +30,10 @@ public class Board extends  BaseEntity{
 
     private String backgroundColor;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board" , cascade = CascadeType.ALL)
     private List<SequenceList> list = new ArrayList<>();
 
-    @OneToOne(mappedBy = "board")
+    @OneToOne(mappedBy = "board" , cascade = CascadeType.ALL )
     private BoardImage boardImage;
 
     @Column(nullable = false, columnDefinition = "bit")
